@@ -11,6 +11,7 @@ import GrowScreen from './grow';
 import ProfileScreen from './profile';
 import CheckinScreen from './check';
 
+
 const SELECTED_STATE_COLOR = "#54487f"; // TODO: this should live in a Tokens file from Design System
 
 const Tab = createMaterialTopTabNavigator();

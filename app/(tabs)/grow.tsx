@@ -2,15 +2,23 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Animated, Dimensions } from 'react-native';
 import axios from "axios";
 import { Video } from "react-native-video";
+import Config from "react-native-config";
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const tabWidth = 60;
 const horizGap = 20;
+console.log("api::: " + Config.REACT_APP_TMDB_KEY);
+console.log("api: " + Config.TMDB_API_ACCESS_TOKEN); 
 
 export default function GrowScreen() {
   const [activeTab, setActiveTab] = useState('Calm');
   const underlinePosition = useRef(new Animated.Value(0)).current;
+
+	console.log("api: " + Config.TMDB_API_ACCESS_TOKEN); 
+	console.log("api2 " + Config.REACT_APP_TMDB_KEY);
+	
+
 
   useEffect(() => {
     // Animate underline position

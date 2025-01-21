@@ -18,6 +18,7 @@ ios/Pods/
 *.p12
 *.key
 *.mobileprovision
+ios/build
 
 # Metro
 .metro-health-check*

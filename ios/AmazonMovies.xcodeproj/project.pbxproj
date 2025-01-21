@@ -385,6 +385,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"FB_SONARKIT_ENABLED=1",
+					"ENVFILE=.env",
 				);
 				INFOPLIST_FILE = AmazonMovies/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -417,6 +418,11 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = AmazonMovies/AmazonMovies.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+					"ENVFILE=.env",
+				);
 				INFOPLIST_FILE = AmazonMovies/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
