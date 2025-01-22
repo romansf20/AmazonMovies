@@ -28,7 +28,7 @@ type Movie = {
 };
 
 const IMAGE_BORDER_RADIUS = 10; // TODO: should come from a Design System token
-const TMDB_API = "https://api.themoviedb.org/3";
+const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 
 export default function GrowScreen() {
@@ -39,7 +39,7 @@ export default function GrowScreen() {
 
   const fetchMovies = async () => {
     try {
-      const response = await axios.get(`${TMDB_API}/movie/popular`, {
+      const response = await axios.get(`${TMDB_BASE_URL}/movie/popular`, {
         params: { api_key: Config.REACT_APP_TMDB_KEY, language: "en-US", page: 1 },
       });
       const moviesWithTrailers = response.data.results.map((movie: Movie) => ({
@@ -69,10 +69,7 @@ export default function GrowScreen() {
 
   const handleMovieSelect = async (movie: Movie) => {
     setSelectedMovie(movie);
-
     const trailerKey = await fetchTrailer(movie);
-    console.log("Trailer Key:", trailerKey);
-
     if (trailerKey) {
       setSelectedMovie({ ...movie, video_url: trailerKey });
         setShowTrailer(true); // Show trailer after 5 seconds
@@ -141,9 +138,8 @@ export default function GrowScreen() {
           animationType="fade"
           onRequestClose={closeTrailer}
         >
-          <View style={styles.overlay}>
+				<View style={styles.overlay}>
 					<Animated.View style={[styles.trailerBox, { opacity }]}>
-            {/* <View style={styles.trailerBox}> */}
 							<TouchableOpacity style={styles.closeButton} onPress={closeTrailer}>
 								<View style={styles.closeButtonCircle}>
 									<Icon name="close" size={24} color="#fff" />
@@ -164,7 +160,6 @@ export default function GrowScreen() {
 								onError={(e) => console.error("YouTube playback error:", e)}
 							/>
 							</View>
-            {/* </View> */}
 						</Animated.View>
           </View>
         </Modal>
@@ -182,8 +177,7 @@ const styles = StyleSheet.create({
     width: width - 86,
     alignItems: "center",
     justifyContent: "center",
-    padding: 16,
-    // backgroundColor: "#1e1e1e",  // TODO: should come from a design system token
+    backgroundColor: "#1e1e1e",  // TODO: should come from a design system token
   },
   poster: {
     width: width * 0.6,

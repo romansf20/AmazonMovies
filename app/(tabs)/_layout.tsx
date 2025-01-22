@@ -143,7 +143,6 @@ const styles = StyleSheet.create({
   },
   screenContent: {
     flex: 1,
-    // padding: 16,
   },
 });
 
