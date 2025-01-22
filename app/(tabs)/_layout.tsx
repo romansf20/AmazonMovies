@@ -11,7 +11,6 @@ import GrowScreen from './grow';
 import ProfileScreen from './profile';
 import CheckinScreen from './check';
 
-
 const SELECTED_STATE_COLOR = "#54487f"; // TODO: this should live in a Tokens file from Design System
 
 const Tab = createMaterialTopTabNavigator();
@@ -51,6 +50,7 @@ const TabNavigator = () => (
         height: 2,
         top: 0,
       },
+			swipeEnabled: false, // Disable swipe gestures between tab
     }}
   >
 		<Tab.Screen
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   },
   screenContent: {
     flex: 1,
-    padding: 16,
+    // padding: 16,
   },
 });
 
