@@ -136,13 +136,13 @@ export default function GrowScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1e1e1e",
+    backgroundColor: "#1e1e1e", //TODO; this sound eventually come from a Design System token
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     textAlign: "center",
-    padding: 16,
+    padding: 16, //TODO; this sound eventually come from a Design System token
   },
   backButton: {
     marginRight: 10,
@@ -153,8 +153,8 @@ const styles = StyleSheet.create({
   headerTitle: {
     flex: 1,
     textAlign: "center",
-    fontSize: 20,
-    color: "#fff",
+    fontSize: 20, //TODO; this sound eventually come from a Design System token
+    color: "#fff", //TODO; this sound eventually come from a Design System token
   },
   movieCard: {
     width: width - WIDTH_OFFSET,
@@ -171,13 +171,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#fff", //TODO; this sound eventually come from a Design System token
     textAlign: "center",
-    marginTop: 16,
+    marginTop: 16, //TODO; this sound eventually come from a Design System token
   },
   genres: {
     fontSize: 14,
     color: "#ccc", //TODO; this sound eventually come from a Design System token
     textAlign: "center",
-    marginTop: 8,
+    marginTop: 8, //TODO; this sound eventually come from a Design System token
   },
   ratingsContainer: {
     flexDirection: "row",
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 5,
     borderRadius: 6, //TODO; this sound eventually come from a Design System token
-    marginHorizontal: 5,
+    marginHorizontal: 5, 
   },
   userRatingBadge: {
     flexDirection: "row",
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   ratingText: {
-    fontSize: 14,
+    fontSize: 14, //TODO; this sound eventually come from a Design System token
     color: "#fff", //TODO; this sound eventually come from a Design System token
     textAlign: "center",
   },

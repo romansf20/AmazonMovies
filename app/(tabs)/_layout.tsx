@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { NavigationContainer, NavigationIndependentTree} from '@react-navigation/native';
+import React from 'react';
+import { NavigationContainer, NavigationIndependentTree } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -10,12 +10,26 @@ import HomeScreen from './movieList/movieList';
 import ProfileScreen from './profile';
 import SearchScreen from './Search';
 
-const SELECTED_STATE_COLOR = "#fff"; // TODO: this should live in a Tokens file from Design System
+const SELECTED_STATE_COLOR = "#fff";
+const BACKGROUND_COLOR = "#1e1e1e";
+const ICON_SIZE_OFFSET = 4;
+const FOOTER_PADDING = 70;
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
 
-const CustomHeader = ({ title }) => (
+// Define the prop types
+interface CustomHeaderProps {
+  title: string;
+}
+
+interface ScreenWithHeaderProps {
+  title: string;
+  children: React.ReactNode; // Accepts any valid React node
+}
+
+// Functional component with typed props
+const CustomHeader: React.FC<CustomHeaderProps> = ({ title }) => (
   <View>
     <View style={styles.header}>
       <Text style={styles.headerTitle}>{title}</Text>
@@ -23,12 +37,10 @@ const CustomHeader = ({ title }) => (
   </View>
 );
 
-const ScreenWithHeader = ({ title, children }) => (
+const ScreenWithHeader: React.FC<ScreenWithHeaderProps> = ({ title, children }) => (
   <View style={styles.screenContainer}>
     <CustomHeader title={title} />
-    <View style={styles.screenContent}>
-      {children}
-    </View>
+    <View style={styles.screenContent}>{children}</View>
   </View>
 );
 
@@ -37,9 +49,14 @@ const TabNavigator = () => (
     tabBarPosition="bottom"
     screenOptions={{
       tabBarStyle: {
-				backgroundColor: "#1e1e1e",
+        backgroundColor: BACKGROUND_COLOR,
         borderTopWidth: 1,
         borderTopColor: '#555',
+        position: 'absolute',
+        bottom: 4,
+        left: 0,
+        right: 0,
+        height: FOOTER_PADDING,
       },
       tabBarActiveTintColor: SELECTED_STATE_COLOR,
       tabBarInactiveTintColor: '#a1a1a1',
@@ -48,15 +65,19 @@ const TabNavigator = () => (
         height: 1,
         top: 0,
       },
-			swipeEnabled: false, // Disable swipe gestures between tab
+      swipeEnabled: false,
+      tabBarLabelStyle: {
+        fontSize: 12,
+        marginTop: 0,
+      },
     }}
   >
-		<Tab.Screen
+    <Tab.Screen
       name="Home"
       options={{
         tabBarLabel: 'Home',
         tabBarIcon: ({ color, size }) => (
-          <Icon name="home" color={color} size={size} />
+          <Icon name="home" color={color} size={size - ICON_SIZE_OFFSET} />
         ),
       }}
     >
@@ -68,7 +89,7 @@ const TabNavigator = () => (
       options={{
         tabBarLabel: 'Search',
         tabBarIcon: ({ color, size }) => (
-          <Icon name="search" color={color} size={size} />
+          <Icon name="search" color={color} size={size - ICON_SIZE_OFFSET} />
         ),
       }}
     >
@@ -80,7 +101,7 @@ const TabNavigator = () => (
       options={{
         tabBarLabel: 'Profile',
         tabBarIcon: ({ color, size }) => (
-          <Icon name="person" color={color} size={size} />
+          <Icon name="person" color={color} size={size - ICON_SIZE_OFFSET} />
         ),
       }}
     >
@@ -89,26 +110,20 @@ const TabNavigator = () => (
   </Tab.Navigator>
 );
 
-const AppLayout = () => {
-
-
-  return (
-		<NavigationIndependentTree>
-			<NavigationContainer>
-				
-					<Stack.Navigator screenOptions={{ headerShown: false }}>
-						<Stack.Screen name="Main" component={TabNavigator} />
-					</Stack.Navigator>
-				
-			</NavigationContainer>
-		</NavigationIndependentTree>
-  );
-};
+const AppLayout = () => (
+  <NavigationIndependentTree>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Main" component={TabNavigator} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  </NavigationIndependentTree>
+);
 
 const styles = StyleSheet.create({
   header: {
     height: 56,
-    backgroundColor: '#1e1e1e',
+    backgroundColor: BACKGROUND_COLOR,
     justifyContent: 'center',
     alignItems: 'center',
     shadowOffset: { width: 0, height: 2 },
@@ -121,7 +136,8 @@ const styles = StyleSheet.create({
   },
   screenContainer: {
     flex: 1,
-    backgroundColor: '#f1f1f5',
+    backgroundColor: BACKGROUND_COLOR,
+    paddingBottom: FOOTER_PADDING,
   },
   screenContent: {
     flex: 1,
