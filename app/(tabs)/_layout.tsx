@@ -11,7 +11,7 @@ import GrowScreen from './grow';
 import ProfileScreen from './profile';
 import CheckinScreen from './check';
 
-const SELECTED_STATE_COLOR = "#54487f"; // TODO: this should live in a Tokens file from Design System
+const SELECTED_STATE_COLOR = "#fff"; // TODO: this should live in a Tokens file from Design System
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -38,15 +38,15 @@ const TabNavigator = () => (
     tabBarPosition="bottom"
     screenOptions={{
       tabBarStyle: {
-        backgroundColor: '#f8f8f8',
+				backgroundColor: "#1e1e1e",
         borderTopWidth: 1,
-        borderTopColor: '#ddd',
+        borderTopColor: '#555',
       },
       tabBarActiveTintColor: SELECTED_STATE_COLOR,
       tabBarInactiveTintColor: '#a1a1a1',
       tabBarIndicatorStyle: {
         backgroundColor: SELECTED_STATE_COLOR,
-        height: 2,
+        height: 1,
         top: 0,
       },
 			swipeEnabled: false, // Disable swipe gestures between tab

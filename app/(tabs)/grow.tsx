@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    backgroundColor: "rgba(0, 0, 0, 0.83)",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -318,6 +318,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#000",
     width: width,
     alignItems: "center",
+		marginTop: -80,
   },
   closeButton: {
     position: "absolute",
@@ -337,6 +338,7 @@ const styles = StyleSheet.create({
   youtubeWrapper: {
     overflow: "hidden",
     // borderRadius: IMAGE_BORDER_RADIUS,
+		// marginTop: -50,
     height: 220,
     alignSelf: "center",
 		paddingTop: 14,
