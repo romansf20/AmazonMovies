@@ -36,6 +36,7 @@ const IMAGE_BORDER_RADIUS = 10;
 const WIDTH_OFFSET = 90; // value that determines how much of the neighboring movies to show on each side
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
+const ACTIVE_OPACITY = 0.5;
 
 export default function GrowScreen() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -93,6 +94,24 @@ export default function GrowScreen() {
     }
   };
 
+	// Fetch full url of the trailer
+	const fetchTrailer = async (movie: Movie) => {
+    try {
+      const response = await axios.get(`${TMDB_BASE_URL}/movie/${movie.id}/videos`, {
+        params: { api_key: Config.REACT_APP_TMDB_KEY, language: "en-US" },
+      });
+      const trailer = response.data.results.find(
+        (video: any) => video.site === "YouTube" && video.type === "Trailer"
+      );
+      // console.log(Trailer for movie ${movie.title}:, trailer);
+      return trailer ? trailer.key : null; // Return the YouTube video key
+    } catch (error) {
+      console.error(`Error fetching trailer for movie ${movie.id}:, error`);
+      return null;
+    }
+  };
+
+
   // Get genre names from IDs
 	const getGenreNames = (ids: number[]): string => {
 		return ids
@@ -101,15 +120,22 @@ export default function GrowScreen() {
 			.slice(0, 3) // Display only the first 3 genres
 			.join(", ");
 	};
-  const handleMovieSelect = async (movie: Movie) => {
+
+	const handleMovieSelect = async (movie: Movie) => {
     setSelectedMovie(movie);
-    setShowTrailer(true);
-    opacity.setValue(0); // Reset opacity for fade-in animation
-    Animated.timing(opacity, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
+    const trailerKey = await fetchTrailer(movie);
+
+    if (trailerKey) {
+      setSelectedMovie({ ...movie, video_url: trailerKey });
+        setShowTrailer(true); // Show trailer after 5 seconds
+				Animated.timing(opacity, {
+					toValue: 1,
+					duration: 500, // Fade-in duration
+					useNativeDriver: true,
+			}).start();
+    } else {
+      console.warn(`No trailer available for movie ${movie.title}`);
+    }
   };
 
   const closeTrailer = () => {
@@ -143,6 +169,8 @@ export default function GrowScreen() {
 	}
 
 	const renderVideoPlayerOverlay = (videoUrl: string) => {
+		console.log("video_url " + videoUrl);
+		
 		return (
 			<Modal
 				visible={showTrailer}
@@ -152,7 +180,11 @@ export default function GrowScreen() {
 			>
 				<View style={styles.overlay}>
 					<Animated.View style={[styles.trailerBox, { opacity }]}>
-						<TouchableOpacity style={styles.closeButton} onPress={closeTrailer}>
+						<TouchableOpacity 
+							style={styles.closeButton} 
+							onPress={closeTrailer} 
+							activeOpacity={ACTIVE_OPACITY}
+						>
 							<View style={styles.closeButtonCircle}>
 								<Icon name="close" size={24} color="#fff" />
 							</View>
@@ -160,11 +192,12 @@ export default function GrowScreen() {
 						<View style={styles.youtubeWrapper}>
 							<YouTube
 								videoId={videoUrl}
-								height={200}
+								height={300}
 								width={width}
 								play={true}
 								webViewProps={{
 									allowsFullscreenVideo: true,
+									androidLayerType: "hardware",
 								}}
 								onError={(e) => console.error("YouTube playback error:", e)}
 							/>
@@ -180,24 +213,26 @@ export default function GrowScreen() {
       <FlatList
         data={movies}
         renderItem={({ item }) => (
-          <TouchableOpacity
-						style={styles.movieCard}
-						activeOpacity={0.7}
-						onPress={() => handleMovieSelect(item)}
-					>
-						<Image
-							source={{ uri: IMAGE_BASE_URL + item?.poster_path }}
-							style={styles.poster}
-						/>
-						<Text style={styles.title}>{item?.title}</Text>
-						<Text style={styles.genres}>
-							{getGenreNames(item?.genre_ids)}
-						</Text>
-						<View style={styles.ratingsContainer}>
-							{renderParentalRating(item?.parental_rating)}
-							{renderUserRating(item?.vote_average)}
-						</View>
-					</TouchableOpacity>
+					<View style={styles.movieCard}>
+						<TouchableOpacity
+							style={styles.movieCardButton}
+							activeOpacity={ACTIVE_OPACITY}
+							onPress={() => handleMovieSelect(item)}
+						>
+							<Image
+								source={{ uri: IMAGE_BASE_URL + item?.poster_path }}
+								style={styles.poster}
+							/>
+							<Text style={styles.title}>{item?.title}</Text>
+							<Text style={styles.genres}>
+								{getGenreNames(item?.genre_ids)}
+							</Text>
+							<View style={styles.ratingsContainer}>
+								{renderParentalRating(item?.parental_rating)}
+								{renderUserRating(item?.vote_average)}
+							</View>
+						</TouchableOpacity>
+					</View>
         )}
         keyExtractor={(item) => item.id.toString()}
         horizontal
@@ -207,9 +242,8 @@ export default function GrowScreen() {
         decelerationRate="fast"
         pagingEnabled
       />
-
-		{selectedMovie?.video_url && renderVideoPlayerOverlay(selectedMovie?.video_url)}		
-      
+		{selectedMovie?.video_url && 
+			renderVideoPlayerOverlay(selectedMovie?.video_url)}		
     </View>
   );
 }
@@ -226,6 +260,9 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#1e1e1e",
   },
+	movieCardButton: {
+
+	},
   poster: {
     width: width * 0.6,
     height: width * 0.9,
@@ -282,11 +319,12 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: "absolute",
-    top: 20,
-    right: 20,
+    top: 8,
+    right: -2,
+		zIndex: 10,
   },
   closeButtonCircle: {
-    backgroundColor: "#000",
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
     opacity: 0.5,
     borderRadius: 16,
     width: 30,
@@ -296,8 +334,10 @@ const styles = StyleSheet.create({
   },
   youtubeWrapper: {
     overflow: "hidden",
-    borderRadius: IMAGE_BORDER_RADIUS,
-    height: 200,
+    // borderRadius: IMAGE_BORDER_RADIUS,
+    height: 220,
     alignSelf: "center",
+		paddingTop: 14,
+		// paddingBottom: 18,
   },
 });
