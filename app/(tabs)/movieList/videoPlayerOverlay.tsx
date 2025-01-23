@@ -92,3 +92,9 @@ const styles = StyleSheet.create({
     paddingTop: 14,
   },
 });
+
+const videoPlayerOverlay = {
+  VideoPlayerOverlay,
+};
+
+export default videoPlayerOverlay;
