@@ -21,7 +21,6 @@ const CustomHeader = ({ title }) => (
     <View style={styles.header}>
       <Text style={styles.headerTitle}>{title}</Text>
     </View>
-    <View style={styles.headerLine} />
   </View>
 );
 
@@ -121,7 +120,7 @@ const AppLayout = () => {
 const styles = StyleSheet.create({
   header: {
     height: 56,
-    backgroundColor: '#fff',
+    backgroundColor: '#1e1e1e',
     justifyContent: 'center',
     alignItems: 'center',
     shadowOffset: { width: 0, height: 2 },
@@ -131,11 +130,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
-  },
-  headerLine: {
-    height: 1,
-    backgroundColor: '#ddd',
-    width: '100%',
   },
   screenContainer: {
     flex: 1,
