@@ -20,7 +20,7 @@ const WIDTH_OFFSET = 90; // value that determines how much of the neighboring mo
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 const NO_TRAILER_AVAILABLE = "No trailer available"; // TODO: this should live in a UI constants file where it can also be localized
 
-export default function GrowScreen() {
+export default function MovieListScreen() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [genres, setGenres] = useState<Genre[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
@@ -91,7 +91,6 @@ export default function GrowScreen() {
           <Icon name="chevron-left" size={32} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Today's Top Movies</Text>
-        <View style={styles.placeholder} />
       </View>
 
       <FlatList
@@ -105,12 +104,12 @@ export default function GrowScreen() {
                 source={{ uri: IMAGE_BASE_URL + item?.poster_path }}
                 style={styles.poster}
               />
-              <Text style={styles.title}>{item?.title}</Text>
-              <View style={styles.ratingsContainer}>
-                {renderParentalRating(item?.parental_rating)}
-                {renderUserRating(item?.vote_average)}
-              </View>
-              <Text style={styles.genres}>{getGenreNames(item?.genre_ids)}</Text>
+							<Text style={styles.title}>{item?.title}</Text>
+							<View style={styles.ratingsContainer}>
+								{renderParentalRating(item?.parental_rating)}
+								{renderUserRating(item?.vote_average)}
+							</View>
+							<Text style={styles.genres}>{getGenreNames(item?.genre_ids)}</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -123,13 +122,13 @@ export default function GrowScreen() {
         pagingEnabled
       />
       {selectedMovie?.video_url && (
-			<VideoPlayerOverlay
-				videoUrl={selectedMovie?.video_url}
-				showTrailer={showTrailer}
-				closeTrailer={closeTrailer}
-				trailerOpacity={trailerOpacity}
-			/>
-  )}
+				<VideoPlayerOverlay
+					videoUrl={selectedMovie?.video_url}
+					showTrailer={showTrailer}
+					closeTrailer={closeTrailer}
+					trailerOpacity={trailerOpacity}
+				/>
+  		)}
 	</View>
 )}
 
@@ -147,12 +146,11 @@ const styles = StyleSheet.create({
   backButton: {
     marginRight: 10,
   },
-  placeholder: {
-    width: 32,
-  },
   headerTitle: {
     flex: 1,
+		marginLeft: -32, // shift left by the width of the icon to ensure proper centering
     textAlign: "center",
+		fontFamily: "AmazonEmberDisplayMedium",
     fontSize: 20, //TODO; this sound eventually come from a Design System token
     color: "#fff", //TODO; this sound eventually come from a Design System token
   },
@@ -168,13 +166,16 @@ const styles = StyleSheet.create({
     borderRadius: 10, //TODO; this sound eventually come from a Design System token
   },
   title: {
+		width: width * 0.6, // ensure that title never extends beyond the box-art's width
     fontSize: 20,
+		fontFamily: "AmazonEmberDisplayMedium",
     color: "#fff", //TODO; this sound eventually come from a Design System token
     textAlign: "center",
     marginTop: 16, //TODO; this sound eventually come from a Design System token
   },
   genres: {
     fontSize: 14,
+		fontFamily: "AmazonEmberRegular",
     color: "#ccc", //TODO; this sound eventually come from a Design System token
     textAlign: "center",
     marginTop: 8, //TODO; this sound eventually come from a Design System token
@@ -202,6 +203,7 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 14, //TODO; this sound eventually come from a Design System token
+		fontFamily: "AmazonEmberRegular",
     color: "#fff", //TODO; this sound eventually come from a Design System token
     textAlign: "center",
   },
