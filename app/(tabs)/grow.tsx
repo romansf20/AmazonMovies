@@ -25,8 +25,8 @@ type Movie = {
   adult: boolean;
   poster_path: string;
   video_url: string | null;
+  parental_rating: string | null;
 };
-
 type Genre = {
   id: number;
   name: string;
@@ -56,13 +56,38 @@ export default function GrowScreen() {
     }
   };
 
-  // Fetch popular movies
+	// Fetch parental rating for a movie
+	const fetchParentalRating = async (movieId: number): Promise<string | null> => {
+		try {
+			const response = await axios.get(`${TMDB_BASE_URL}/movie/${movieId}/release_dates`, {
+				params: { api_key: Config.REACT_APP_TMDB_KEY },
+			});
+			const results = response.data.results;
+			const usRelease = results.find((item: any) => item.iso_3166_1 === "US");
+			if (usRelease && usRelease.release_dates.length > 0) {
+				const certification = usRelease.release_dates[0].certification;
+				return certification || "Not Rated";
+			}
+			return "Not Rated";
+		} catch (error) {
+			console.error(`Error fetching parental rating for movie ${movieId}:`, error);
+			return "Not Rated";
+		}
+	};
+
+  // Fetch popular movies and include parental rating
   const fetchMovies = async () => {
     try {
       const response = await axios.get(`${TMDB_BASE_URL}/movie/popular`, {
         params: { api_key: Config.REACT_APP_TMDB_KEY, language: "en-US", page: 1 },
       });
-      setMovies(response.data.results);
+      const moviesWithRatings = await Promise.all(
+        response.data.results.map(async (movie: Movie) => {
+          const parentalRating = await fetchParentalRating(movie.id);
+          return { ...movie, parental_rating: parentalRating };
+        })
+      );
+      setMovies(moviesWithRatings);
     } catch (error) {
       console.error("Error fetching movies:", error);
     }
@@ -115,7 +140,7 @@ export default function GrowScreen() {
               Genres: {getGenreNames(item.genre_ids)}
             </Text>
             <Text style={styles.info}>
-              Parental Rating: {item.adult ? "Adult" : "General"}
+							Parental Rating: {item.parental_rating}
             </Text>
             <Text style={styles.info}>
               User Rating: {item.vote_average.toFixed(1)}
