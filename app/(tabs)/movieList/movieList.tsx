@@ -18,7 +18,7 @@ import {
 const { width } = Dimensions.get("window");
 const WIDTH_OFFSET = 90; // value that determines how much of the neighboring movies to show on each side
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
-const NO_TRAILER_AVAILABLE = "No trailer available";
+const NO_TRAILER_AVAILABLE = "No trailer available"; // TODO: this should live in a UI constants file where it can also be localized
 
 export default function GrowScreen() {
   const [movies, setMovies] = useState<Movie[]>([]);
