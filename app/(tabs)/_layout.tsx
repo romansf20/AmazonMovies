@@ -3,7 +3,7 @@ import { NavigationContainer, NavigationIndependentTree } from '@react-navigatio
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
 
 // Import screens
 import HomeScreen from './movieList/movieList';
@@ -14,6 +14,7 @@ const SELECTED_STATE_COLOR = "#fff";
 const BACKGROUND_COLOR = "#1e1e1e";
 const ICON_SIZE_OFFSET = 4;
 const FOOTER_PADDING = 70;
+const TAB_SELECTED_LINE_WIDTH = 50;
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -62,6 +63,8 @@ const TabNavigator = () => (
       tabBarInactiveTintColor: '#a1a1a1',
       tabBarIndicatorStyle: {
         backgroundColor: SELECTED_STATE_COLOR,
+				width: TAB_SELECTED_LINE_WIDTH,
+				marginLeft: (Dimensions.get('window').width / 3 - TAB_SELECTED_LINE_WIDTH) / 2,
         height: 1,
         top: 0,
       },
