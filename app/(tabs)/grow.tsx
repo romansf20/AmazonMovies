@@ -94,13 +94,13 @@ export default function GrowScreen() {
   };
 
   // Get genre names from IDs
-  const getGenreNames = (ids: number[]): string => {
-    return ids
-      .map((id) => genres.find((genre) => genre.id === id)?.name)
-      .filter(Boolean) // Remove undefined values
-      .join(", ");
-  };
-
+	const getGenreNames = (ids: number[]): string => {
+		return ids
+			.map((id) => genres.find((genre) => genre.id === id)?.name)
+			.filter(Boolean) // Remove undefined values
+			.slice(0, 3) // Display only the first 3 genres
+			.join(", ");
+	};
   const handleMovieSelect = async (movie: Movie) => {
     setSelectedMovie(movie);
     setShowTrailer(true);
@@ -121,31 +121,83 @@ export default function GrowScreen() {
     fetchMovies(); // Fetch movies next
   }, []);
 
+	const renderUserRating = (voteAverage:number) => {
+		return (
+			<View style={[styles.ratingBadge, styles.userRatingBadge]}>
+				<Icon name="star" size={16} color="#FFD700" style={styles.starIcon} />
+				<Text style={styles.ratingText}>
+					{voteAverage.toFixed(1)}
+				</Text>
+			</View>
+		)
+	} 
+
+	const renderParentalRating = (parentalRating:string | null) => {
+		return (
+			<View style={styles.ratingBadge}>
+				<Text style={styles.ratingText}>
+					{parentalRating}
+				</Text>
+			</View>
+		)
+	}
+
+	const renderVideoPlayerOverlay = (videoUrl: string) => {
+		return (
+			<Modal
+				visible={showTrailer}
+				transparent={true}
+				animationType="fade"
+				onRequestClose={closeTrailer}
+			>
+				<View style={styles.overlay}>
+					<Animated.View style={[styles.trailerBox, { opacity }]}>
+						<TouchableOpacity style={styles.closeButton} onPress={closeTrailer}>
+							<View style={styles.closeButtonCircle}>
+								<Icon name="close" size={24} color="#fff" />
+							</View>
+						</TouchableOpacity>
+						<View style={styles.youtubeWrapper}>
+							<YouTube
+								videoId={videoUrl}
+								height={200}
+								width={width}
+								play={true}
+								webViewProps={{
+									allowsFullscreenVideo: true,
+								}}
+								onError={(e) => console.error("YouTube playback error:", e)}
+							/>
+						</View>
+					</Animated.View>
+				</View>
+			</Modal>
+		)
+	}
+
   return (
     <View style={styles.container}>
       <FlatList
         data={movies}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={styles.movieCard}
-            activeOpacity={0.7}
-            onPress={() => handleMovieSelect(item)}
-          >
-            <Image
-              source={{ uri: IMAGE_BASE_URL + item.poster_path }}
-              style={styles.poster}
-            />
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.info}>
-              Genres: {getGenreNames(item.genre_ids)}
-            </Text>
-            <Text style={styles.info}>
-							Parental Rating: {item.parental_rating}
-            </Text>
-            <Text style={styles.info}>
-              User Rating: {item.vote_average.toFixed(1)}
-            </Text>
-          </TouchableOpacity>
+						style={styles.movieCard}
+						activeOpacity={0.7}
+						onPress={() => handleMovieSelect(item)}
+					>
+						<Image
+							source={{ uri: IMAGE_BASE_URL + item?.poster_path }}
+							style={styles.poster}
+						/>
+						<Text style={styles.title}>{item?.title}</Text>
+						<Text style={styles.genres}>
+							{getGenreNames(item?.genre_ids)}
+						</Text>
+						<View style={styles.ratingsContainer}>
+							{renderParentalRating(item?.parental_rating)}
+							{renderUserRating(item?.vote_average)}
+						</View>
+					</TouchableOpacity>
         )}
         keyExtractor={(item) => item.id.toString()}
         horizontal
@@ -156,36 +208,8 @@ export default function GrowScreen() {
         pagingEnabled
       />
 
-      {selectedMovie?.video_url && (
-        <Modal
-          visible={showTrailer}
-          transparent={true}
-          animationType="fade"
-          onRequestClose={closeTrailer}
-        >
-          <View style={styles.overlay}>
-            <Animated.View style={[styles.trailerBox, { opacity }]}>
-              <TouchableOpacity style={styles.closeButton} onPress={closeTrailer}>
-                <View style={styles.closeButtonCircle}>
-                  <Icon name="close" size={24} color="#fff" />
-                </View>
-              </TouchableOpacity>
-              <View style={styles.youtubeWrapper}>
-                <YouTube
-                  videoId={selectedMovie.video_url}
-                  height={200}
-                  width={width}
-                  play={true}
-                  webViewProps={{
-                    allowsFullscreenVideo: true,
-                  }}
-                  onError={(e) => console.error("YouTube playback error:", e)}
-                />
-              </View>
-            </Animated.View>
-          </View>
-        </Modal>
-      )}
+		{selectedMovie?.video_url && renderVideoPlayerOverlay(selectedMovie?.video_url)}		
+      
     </View>
   );
 }
@@ -206,16 +230,43 @@ const styles = StyleSheet.create({
     width: width * 0.6,
     height: width * 0.9,
     borderRadius: IMAGE_BORDER_RADIUS,
-    marginBottom: 16,
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
     color: "#fff",
+		textAlign: "center",
+		marginTop: 16,
   },
-  info: {
+  genres: {
     fontSize: 14,
     color: "#ccc",
+    textAlign: "center",
+		marginTop: 10
+  },
+  ratingsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 12,
+  },
+  ratingBadge: {
+    backgroundColor: "#333",
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 6,
+    marginHorizontal: 5,
+  },
+	userRatingBadge: {
+    flexDirection: "row", // Align star and text horizontally
+    alignItems: "center",
+  },
+  starIcon: {
+    marginRight: 5, // Space between the star and the rating text
+  },
+  ratingText: {
+    fontSize: 14,
+    color: "#fff",
     textAlign: "center",
   },
   overlay: {
