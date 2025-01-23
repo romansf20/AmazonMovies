@@ -33,10 +33,10 @@ type Genre = {
 };
 
 const IMAGE_BORDER_RADIUS = 10;
+const ACTIVE_OPACITY = 0.5; // define custom opacity for all the buttons' down state that use TouchableOpacity
 const WIDTH_OFFSET = 90; // value that determines how much of the neighboring movies to show on each side
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
-const ACTIVE_OPACITY = 0.5;
 
 export default function GrowScreen() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -111,7 +111,6 @@ export default function GrowScreen() {
     }
   };
 
-
   // Get genre names from IDs
 	const getGenreNames = (ids: number[]): string => {
 		return ids
@@ -169,8 +168,6 @@ export default function GrowScreen() {
 	}
 
 	const renderVideoPlayerOverlay = (videoUrl: string) => {
-		console.log("video_url " + videoUrl);
-		
 		return (
 			<Modal
 				visible={showTrailer}
@@ -210,6 +207,20 @@ export default function GrowScreen() {
 
   return (
     <View style={styles.container}>
+ 
+ 			<View style={styles.header}>
+        <TouchableOpacity 
+					style={styles.backButton} 
+					activeOpacity={ACTIVE_OPACITY} 
+					onPress={() => console.log("Back button pressed")}
+				>
+          <Icon name="chevron-left" size={32} color="#fff" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Today's Top Movies</Text>
+				<View style={styles.placeholder} />
+      </View>
+
+
       <FlatList
         data={movies}
         renderItem={({ item }) => (
@@ -252,14 +263,32 @@ export default function GrowScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: "#1e1e1e",
+  },
+	header: {
+    flexDirection: "row",
+    alignItems: "center",
+    textAlign: "center",
+    padding: 16,
+  },
+  backButton: {
+    marginRight: 10,
+  },
+	placeholder: {
+    width: 32, // Matches the size of the chevron icon
+  },
+  headerTitle: {
+		flex: 1,
+		textAlign: "center", 
+    fontSize: 20,
+    fontFamily: "AmazonEmberDisplayMedium",
+    color: "#fff",		
   },
   movieCard: {
     width: width - WIDTH_OFFSET,
     alignItems: "center",
     justifyContent: "center",
     padding: 16,
-    backgroundColor: "#1e1e1e",
   },
 	movieCardButton: {
 
@@ -271,28 +300,30 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: "bold",
+		fontFamily: "AmazonEmberDisplayMedium", 
     color: "#fff",
 		textAlign: "center",
 		marginTop: 16,
   },
   genres: {
+		fontFamily: "AmazonEmberRegular", 
     fontSize: 14,
     color: "#ccc",
     textAlign: "center",
-		marginTop: 10
+		marginTop: 8
   },
   ratingsContainer: {
     flexDirection: "row",
     alignItems: "center",
 		justifyContent: "center",
-    marginTop: 12,
+    marginTop: 16,
   },
   ratingBadge: {
     backgroundColor: "#333",
 		color: "#fff",
+		minWidth: 28,
     paddingVertical: 5,
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
     borderRadius: 6,
     marginHorizontal: 5,
   },
@@ -304,6 +335,7 @@ const styles = StyleSheet.create({
     marginRight: 5, // Space between the star and the rating text
   },
   ratingText: {
+		fontFamily: "AmazonEmberRegular",
     fontSize: 14,
     color: "#fff",
     textAlign: "center",
@@ -337,11 +369,8 @@ const styles = StyleSheet.create({
   },
   youtubeWrapper: {
     overflow: "hidden",
-    // borderRadius: IMAGE_BORDER_RADIUS,
-		// marginTop: -50,
     height: 220,
     alignSelf: "center",
 		paddingTop: 14,
-		// paddingBottom: 18,
   },
 });
