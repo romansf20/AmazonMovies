@@ -224,13 +224,14 @@ export default function GrowScreen() {
 								style={styles.poster}
 							/>
 							<Text style={styles.title}>{item?.title}</Text>
-							<Text style={styles.genres}>
-								{getGenreNames(item?.genre_ids)}
-							</Text>
+							
 							<View style={styles.ratingsContainer}>
 								{renderParentalRating(item?.parental_rating)}
 								{renderUserRating(item?.vote_average)}
 							</View>
+							<Text style={styles.genres}>
+								{getGenreNames(item?.genre_ids)}
+							</Text>
 						</TouchableOpacity>
 					</View>
         )}
@@ -283,12 +284,13 @@ const styles = StyleSheet.create({
   },
   ratingsContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+		justifyContent: "center",
     marginTop: 12,
   },
   ratingBadge: {
     backgroundColor: "#333",
+		color: "#fff",
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 6,
