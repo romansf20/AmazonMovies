@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 
-export default function CheckInScreen() {
+export default function SearchScreen() {
   return (
     <View style={styles.container}>
       <Image

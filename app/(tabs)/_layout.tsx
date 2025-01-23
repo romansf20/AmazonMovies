@@ -6,10 +6,9 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { View, Text, StyleSheet } from 'react-native';
 
 // Import screens
-import DashboardScreen from './index';
-import GrowScreen from './grow';
+import HomeScreen from './movieList/movieList';
 import ProfileScreen from './profile';
-import CheckinScreen from './check';
+import SearchScreen from './Search';
 
 const SELECTED_STATE_COLOR = "#fff"; // TODO: this should live in a Tokens file from Design System
 
@@ -53,40 +52,29 @@ const TabNavigator = () => (
     }}
   >
 		<Tab.Screen
-      name="Grow"
+      name="Home"
       options={{
-        tabBarLabel: 'Grow',
+        tabBarLabel: 'Home',
         tabBarIcon: ({ color, size }) => (
-          <Icon name="trending-up" color={color} size={size} />
+          <Icon name="home" color={color} size={size} />
         ),
       }}
     >
-      {() => <ScreenWithHeader title="Grow"><GrowScreen /></ScreenWithHeader>}
+      {() => <ScreenWithHeader title="Grow"><HomeScreen /></ScreenWithHeader>}
     </Tab.Screen>
 
     <Tab.Screen
-      name="Check-in"
+      name="Search"
       options={{
-        tabBarLabel: 'Check-in',
+        tabBarLabel: 'Search',
         tabBarIcon: ({ color, size }) => (
-          <Icon name="how-to-reg" color={color} size={size} />
+          <Icon name="search" color={color} size={size} />
         ),
       }}
     >
-      {() => <ScreenWithHeader title="Check-in"><CheckinScreen /></ScreenWithHeader>}
+      {() => <ScreenWithHeader title="Search"><SearchScreen /></ScreenWithHeader>}
     </Tab.Screen>
-		<Tab.Screen
-      name="Dashboard"
-      options={{
-        tabBarLabel: 'Dash',
-        tabBarIcon: ({ color, size }) => (
-          <Icon name="bar-chart" color={color} size={size} />
-        ),
-      }}
-    >
-      {() => <ScreenWithHeader title="Dashboard"><DashboardScreen /></ScreenWithHeader>}
-    </Tab.Screen>
-    
+
     <Tab.Screen
       name="Profile"
       options={{
