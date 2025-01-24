@@ -3,6 +3,25 @@ import axios from "axios";
 import Config from "react-native-config";
 import { Genre, Movie } from "./types";
 
+/**
+ * apiService Module
+ * 
+ * This module provides functions for interacting with The Movie Database (TMDB) API to fetch
+ * movie-related data such as genres, popular movies, parental ratings, and trailers. 
+ * It handles API requests, error management, and data transformation where needed.
+ * 
+ * Key Functions:
+ * - fetchGenres: Retrieves a list of movie genres from TMDB.
+ * - fetchParentalRating: Fetches the parental rating for a specific movie based on its release dates.
+ * - fetchMovies: Retrieves popular movies and enriches them with parental ratings.
+ * - fetchTrailer: Fetches the YouTube trailer key for a specific movie.
+ * 
+ * Design Considerations:
+ * - Centralized API configuration (TMDB base URL and API key).
+ * - Graceful error handling with console logging and fallback values.
+ * - Data transformations to ensure API responses are adapted for the app's needs.
+  */
+
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const NOT_RATED = "Not Rated";
 

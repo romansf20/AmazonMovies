@@ -1,22 +1,46 @@
 import React, { useEffect, useState, useRef } from "react";
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from "react-native-vector-icons/MaterialIcons";
 import apiService from "./apiService";
 import { VideoPlayerOverlay } from "./videoPlayerOverlay";
-import constants from "./constants"
+import constants from "./constants";
 import { Genre, Movie } from "./types";
+import ReanimatedCarousel from "react-native-reanimated-carousel";
 import {
   View,
   Text,
   StyleSheet,
   Dimensions,
-  FlatList,
   Image,
   TouchableOpacity,
   Animated,
 } from "react-native";
 
+/**
+ * MovieListScreen Component
+ * 
+ * This component displays a list of top movies in a horizontally scrollable carousel, 
+ * featuring movie posters, titles, genres, user ratings, and parental ratings. 
+ * Users can interact with the carousel to select a movie and view its trailer if available.
+ * 
+ * Key Features:
+ * - Fetches movie and genre data from an API and dynamically updates the state.
+ * - Displays movies in a parallax-style animated carousel using `react-native-reanimated-carousel`.
+ * - Implements smooth transitions and animations when showing trailers.
+ * - Allows users to view detailed movie information, including genre and ratings.
+ * - Integrates a `VideoPlayerOverlay` for playing movie trailers.
+ * 
+ * Design Considerations:
+ * - Responsive layout adapts to different screen sizes using `Dimensions`.
+ * - Styled using `StyleSheet` for a clean and maintainable codebase.
+ * - Constants and reusable components ensure scalability and easier localization.
+ * 
+ * TODOs:
+ * - Move hardcoded styles like colors, fonts, and padding to a centralized Design System.
+ * - Localize static text for better accessibility across regions.
+ */
+
 const { width } = Dimensions.get("window");
-const WIDTH_OFFSET = 90; // value that determines how much of the neighboring movies to show on each side
+const { height } = Dimensions.get("window");
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 const NO_TRAILER_AVAILABLE = "No trailer available"; // TODO: this should live in a UI constants file where it can also be localized
 
@@ -56,7 +80,7 @@ export default function MovieListScreen() {
     setShowTrailer(false);
   };
 
-	useEffect(() => {
+  useEffect(() => {
     const initializeData = async () => {
       const genresData = await apiService.fetchGenres();
       setGenres(genresData);
@@ -84,78 +108,82 @@ export default function MovieListScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton} 
+			<TouchableOpacity 
           activeOpacity={constants.ACTIVE_OPACITY} 
           onPress={() => console.log("Back button pressed")}>
           <Icon name="chevron-left" size={32} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Today's Top Movies</Text>
       </View>
-
-      <FlatList
-        data={movies}
-        renderItem={({ item }) => (
-          <View style={styles.movieCard}>
-            <TouchableOpacity
-              activeOpacity={constants.ACTIVE_OPACITY}
-              onPress={() => handleMovieSelect(item)}>
-              <Image
-                source={{ uri: IMAGE_BASE_URL + item?.poster_path }}
-                style={styles.poster}
-              />
-							<Text style={styles.title}>{item?.title}</Text>
-							<View style={styles.ratingsContainer}>
-								{renderParentalRating(item?.parental_rating)}
-								{renderUserRating(item?.vote_average)}
-							</View>
-							<Text style={styles.genres}>{getGenreNames(item?.genre_ids)}</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        keyExtractor={(item) => item.id.toString()}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        snapToAlignment="center"
-        snapToInterval={width - WIDTH_OFFSET}
-        decelerationRate="fast"
-        pagingEnabled
-      />
-      {selectedMovie?.video_url && (
-				<VideoPlayerOverlay
-					videoUrl={selectedMovie?.video_url}
-					showTrailer={showTrailer}
-					closeTrailer={closeTrailer}
-					trailerOpacity={trailerOpacity}
+			
+			<View style={styles.carouselContainer}>
+				<ReanimatedCarousel
+					width={width} // Width of each item
+					height={height * 0.6} // Height of each item
+					data={movies}
+					renderItem={({ item }) => (
+						<View style={styles.movieCard}>
+							<TouchableOpacity
+								activeOpacity={constants.ACTIVE_OPACITY}
+								onPress={() => handleMovieSelect(item)}
+							>
+								<Image
+									source={{ uri: IMAGE_BASE_URL + item?.poster_path }}
+									style={styles.poster}
+								/>
+								<Text style={styles.title}>{item?.title}</Text>
+								<View style={styles.ratingsContainer}>
+									{renderParentalRating(item?.parental_rating)}
+									{renderUserRating(item?.vote_average)}
+								</View>
+								<Text style={styles.genres}>{getGenreNames(item?.genre_ids)}</Text>
+							</TouchableOpacity>
+						</View>
+					)}
+					mode="parallax" // Enables parallax effect for smoother transitions
+					modeConfig={{
+						parallaxScrollingScale: 0.9, // Scale for adjacent items
+						parallaxScrollingOffset: 100, // Visible portion of adjacent items
+					}}
+					scrollAnimationDuration={400}
 				/>
-  		)}
-	</View>
-)}
+			</View>
+      {selectedMovie?.video_url && (
+        <VideoPlayerOverlay
+          videoUrl={selectedMovie?.video_url}
+          showTrailer={showTrailer}
+          closeTrailer={closeTrailer}
+          trailerOpacity={trailerOpacity}
+        />
+      )}
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1e1e1e", //TODO; this sound eventually come from a Design System token
+    backgroundColor: "#1e1e1e", 
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     textAlign: "center",
-    padding: 16, //TODO; this sound eventually come from a Design System token
+    padding: 16, 
   },
-  backButton: {
-    marginRight: 10,
-  },
+	carouselContainer: {
+		top: 50
+	},
   headerTitle: {
     flex: 1,
-		marginLeft: -32, // shift left by the width of the icon to ensure proper centering
+		marginRight: 32, // shift left by the width of the icon to ensure proper centering
     textAlign: "center",
-		fontFamily: "AmazonEmberDisplayMedium",
-    fontSize: 20, //TODO; this sound eventually come from a Design System token
-    color: "#fff", //TODO; this sound eventually come from a Design System token
+    fontFamily: "AmazonEmberDisplayMedium",
+    fontSize: 20, 
+    color: "#fff", 
   },
   movieCard: {
-    width: width - WIDTH_OFFSET,
+    width: width,
     alignItems: "center",
     justifyContent: "center",
     padding: 16,
@@ -163,22 +191,22 @@ const styles = StyleSheet.create({
   poster: {
     width: width * 0.6,
     height: width * 0.9,
-    borderRadius: 10, //TODO; this sound eventually come from a Design System token
+    borderRadius: 10, 
   },
   title: {
-		width: width * 0.6, // ensure that title never extends beyond the box-art's width
+    width: width * 0.6, // ensure that title never extends beyond the box-art's width
     fontSize: 20,
-		fontFamily: "AmazonEmberDisplayMedium",
-    color: "#fff", //TODO; this sound eventually come from a Design System token
+    fontFamily: "AmazonEmberDisplayMedium",
+    color: "#fff", 
     textAlign: "center",
-    marginTop: 16, //TODO; this sound eventually come from a Design System token
+    marginTop: 16, 
   },
   genres: {
     fontSize: 14,
-		fontFamily: "AmazonEmberRegular",
-    color: "#ccc", //TODO; this sound eventually come from a Design System token
+    fontFamily: "AmazonEmberRegular",
+    color: "#ccc", 
     textAlign: "center",
-    marginTop: 8, //TODO; this sound eventually come from a Design System token
+    marginTop: 8, 
   },
   ratingsContainer: {
     flexDirection: "row",
@@ -187,12 +215,12 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   ratingBadge: {
-    backgroundColor: "#333", //TODO; this sound eventually come from a Design System token
+    backgroundColor: "#333", 
     minWidth: 28,
     paddingVertical: 5,
     paddingHorizontal: 5,
-    borderRadius: 6, //TODO; this sound eventually come from a Design System token
-    marginHorizontal: 5, 
+    borderRadius: 6, 
+    marginHorizontal: 5,
   },
   userRatingBadge: {
     flexDirection: "row",
@@ -202,9 +230,9 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   ratingText: {
-    fontSize: 14, //TODO; this sound eventually come from a Design System token
-		fontFamily: "AmazonEmberRegular",
-    color: "#fff", //TODO; this sound eventually come from a Design System token
+    fontSize: 14, 
+    fontFamily: "AmazonEmberRegular",
+    color: "#fff", 
     textAlign: "center",
   },
 });

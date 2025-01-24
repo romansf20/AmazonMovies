@@ -1,4 +1,3 @@
-// VideoPlayerOverlay.tsx
 import React from "react";
 import { View, Modal, Animated, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -6,6 +5,36 @@ import YouTube from "react-native-youtube-iframe";
 import { ACTIVE_OPACITY } from "./constants";
 
 const { width } = Dimensions.get("window");
+
+/**
+ * VideoPlayerOverlay Component
+ * 
+ * This component renders a modal overlay containing a YouTube video player 
+ * for displaying movie trailers. It provides an immersive experience with 
+ * smooth animations and a close button for user interaction.
+ * 
+ * Props:
+ * - videoUrl (string | undefined): The YouTube video ID for the trailer to be played.
+ * - showTrailer (boolean): Controls the visibility of the overlay modal.
+ * - closeTrailer (function): Callback function to close the trailer overlay.
+ * - trailerOpacity (Animated.Value): Controls the opacity animation for the trailer box.
+ * 
+ * Key Features:
+ * - Integrates the `react-native-youtube-iframe` library for YouTube playback.
+ * - Supports smooth fade-in and fade-out transitions using React Native's `Animated` API.
+ * - Includes a close button styled with a semi-transparent background for usability.
+ * - Utilizes responsive design to adapt to different screen widths.
+ * 
+ * Design Considerations:
+ * - Customizable animations for a polished user experience.
+ * - Ensures full-screen video playback support via `webViewProps`.
+ * - Styled with `StyleSheet` to maintain clean and modular styles.
+ * - Adheres to accessibility and usability standards with a focus on intuitive controls.
+ * 
+ * TODOs:
+ * - Extract hardcoded styles like colors and dimensions into a centralized Design System for consistency.
+ * - Add localization for error messages and button text.
+ */
 
 interface VideoPlayerOverlayProps {
   videoUrl: string | undefined;

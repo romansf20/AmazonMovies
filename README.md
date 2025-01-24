@@ -1,12 +1,5 @@
-npm run ios  
-npx expo run:ios --device "iPhone 15"
-npx react-native start --reset-cache
-npx pod-install ios
- 
-npm i -g pod-install
-npx react-native init 
 
-# Welcome to your Expo app 👋
+# Welcome to Amazon Movies Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
@@ -16,12 +9,19 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
    ```bash
    npm install
+	 npx pod-install ios
+	 npx react-native init 
    ```
 
 2. Start the app
 
    ```bash
     npx expo start
+		npm run ios  
+		# Example of running on a specific device
+		npx expo run:ios --device "iPhone 15"
+		# Reset the Metro bundler cache:
+		npx react-native start --reset-cache
    ```
 
 In the output, you'll find options to open the app in a
