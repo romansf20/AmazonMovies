@@ -41,6 +41,8 @@ import {
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
+const POSTER_WIDTH = width * 0.6 * 1.1;
+const POSTER_HEIGHT = width * 0.9 * 1.1;
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 const NO_TRAILER_AVAILABLE = "No trailer available"; // TODO: this should live in a UI constants file where it can also be localized
 
@@ -189,12 +191,12 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   poster: {
-    width: width * 0.6,
-    height: width * 0.9,
+    width: POSTER_WIDTH,
+    height: POSTER_HEIGHT,
     borderRadius: 10, 
   },
   title: {
-    width: width * 0.6, // ensure that title never extends beyond the box-art's width
+    width: POSTER_WIDTH, // ensure that title never extends beyond the box-art's width
     fontSize: 20,
     fontFamily: "AmazonEmberDisplayMedium",
     color: "#fff", 
