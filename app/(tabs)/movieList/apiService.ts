@@ -55,23 +55,65 @@ export const fetchParentalRating = async (movieId: number): Promise<string> => {
   }
 };
 
+export const fetchMovieDetails = async (movieId: number) => {
+  try {
+    const [detailsResponse, creditsResponse] = await Promise.all([
+      axios.get(`${TMDB_BASE_URL}/movie/${movieId}`, {
+        params: { api_key: Config.REACT_APP_TMDB_KEY, language: "en-US" },
+      }),
+      axios.get(`${TMDB_BASE_URL}/movie/${movieId}/credits`, {
+        params: { api_key: Config.REACT_APP_TMDB_KEY, language: "en-US" },
+      }),
+    ]);
+
+    const details = detailsResponse.data;
+    const credits = creditsResponse.data;
+
+    const director = credits.crew.find((member: any) => member.job === "Director")?.name || "Unknown";
+    const cast = credits.cast.slice(0, 3).map((member: any) => member.name);
+
+    return {
+      release_year: details.release_date?.split("-")[0] || "Unknown",
+      description: details.overview || "No description available.",
+      director,
+      cast,
+    };
+  } catch (error) {
+    console.error(`Error fetching movie details for ${movieId}:`, error);
+    return {
+      release_year: "Unknown",
+      description: "No description available.",
+      director: "Unknown",
+      cast: [],
+    };
+  }
+};
+
 export const fetchMovies = async (): Promise<Movie[]> => {
   try {
     const response = await axios.get(`${TMDB_BASE_URL}/movie/popular`, {
       params: { api_key: Config.REACT_APP_TMDB_KEY, language: "en-US", page: 1 },
     });
-    const moviesWithRatings = await Promise.all(
+
+    const moviesWithDetails = await Promise.all(
       response.data.results.map(async (movie: Movie) => {
         const parentalRating = await fetchParentalRating(movie.id);
-        return { ...movie, parental_rating: parentalRating };
+        const details = await fetchMovieDetails(movie.id);
+        return {
+          ...movie,
+          parental_rating: parentalRating,
+          ...details,
+        };
       })
     );
-    return moviesWithRatings;
+
+    return moviesWithDetails;
   } catch (error) {
     console.error("Error fetching movies:", error);
     return [];
   }
 };
+
 
 export const fetchTrailer = async (movieId: number): Promise<string | null> => {
   try {

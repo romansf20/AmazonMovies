@@ -5,6 +5,7 @@ import { VideoPlayerOverlay } from "./videoPlayerOverlay";
 import constants from "./constants";
 import { Genre, Movie } from "./types";
 import ReanimatedCarousel from "react-native-reanimated-carousel";
+import movieCommon from "./movieCommon"; 
 import {
   View,
   Text,
@@ -41,10 +42,7 @@ import {
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
-const POSTER_WIDTH = width * 0.6 * 1.1;
-const POSTER_HEIGHT = width * 0.9 * 1.1;
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
-const NO_TRAILER_AVAILABLE = "No trailer available"; // TODO: this should live in a UI constants file where it can also be localized
 
 export default function MovieListScreen() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -53,30 +51,38 @@ export default function MovieListScreen() {
   const [showTrailer, setShowTrailer] = useState(false);
   const trailerOpacity = useRef(new Animated.Value(0)).current;
 
-  const getGenreNames = (ids: number[]): string => {
-    return ids
-      .map((id) => genres.find((genre) => genre.id === id)?.name)
-      .filter(Boolean)
-      .slice(0, 3)
-      .join(", ");
-  };
-
-  const handleMovieSelect = async (movie: Movie) => {
-    setSelectedMovie(movie);
-    const trailerKey = await apiService.fetchTrailer(movie.id);
-
-    if (trailerKey) {
-      setSelectedMovie({ ...movie, video_url: trailerKey });
-      setShowTrailer(true);
-      Animated.timing(trailerOpacity, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      console.warn(`${NO_TRAILER_AVAILABLE} for movie ${movie.title || "Unknown"}`);
-    }
-  };
+	const handleMovieSelect = async (movie: Movie) => {
+		const {
+			id,
+			title,
+			release_year,
+			parental_rating,
+			vote_average,
+			description,
+			director,
+			cast,
+		} = movie;
+	
+		setSelectedMovie({
+			...movie,
+			video_url: await apiService.fetchTrailer(id),
+			title,
+			release_year,
+			parental_rating,
+			vote_average,
+			genres: movieCommon.getGenreNames(movie.genre_ids, genres),
+			description,
+			director,
+			cast,
+		});
+	
+		setShowTrailer(true);
+		Animated.timing(trailerOpacity, {
+			toValue: 1,
+			duration: 400,
+			useNativeDriver: true,
+		}).start();
+	};
 
   const closeTrailer = () => {
     setShowTrailer(false);
@@ -86,27 +92,33 @@ export default function MovieListScreen() {
     const initializeData = async () => {
       const genresData = await apiService.fetchGenres();
       setGenres(genresData);
-
-      const moviesData = await apiService.fetchMovies(genresData);
+      const moviesData = await apiService.fetchMovies();
       setMovies(moviesData);
     };
 
     initializeData();
   }, []);
 
-  const renderUserRating = (voteAverage: number) => (
-    <View style={[styles.ratingBadge, styles.userRatingBadge]}>
-      <Icon name="star" size={16} color="#FFD700" style={styles.starIcon} />
-      <Text style={styles.ratingText}>{voteAverage.toFixed(1)}</Text>
-    </View>
-  );
-
-  const renderParentalRating = (parentalRating: string | null) => (
-    <View style={styles.ratingBadge}>
-      <Text style={styles.ratingText}>{parentalRating}</Text>
-    </View>
-  );
-
+	const renderItem = ({ item }: { item: Movie }) => (
+		<View style={styles.movieCard}>
+			<TouchableOpacity
+				activeOpacity={constants.ACTIVE_OPACITY}
+				onPress={() => handleMovieSelect(item)}
+			>
+				<Image
+					source={{ uri: IMAGE_BASE_URL + item?.poster_path }}
+					style={styles.poster}
+				/>
+				<Text style={movieCommon.styles.title}>{item?.title}</Text>
+				<View style={movieCommon.styles.ratingsContainer}>
+					{movieCommon.renderParentalRating(item?.parental_rating)}
+					{movieCommon.renderUserRating(item?.vote_average)}
+				</View>
+				<Text style={movieCommon.styles.genres}>{movieCommon.getGenreNames(item?.genre_ids, genres)}</Text>
+			</TouchableOpacity>
+		</View>
+	);
+	
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -123,25 +135,7 @@ export default function MovieListScreen() {
 					width={width} // Width of each item
 					height={height * 0.6} // Height of each item
 					data={movies}
-					renderItem={({ item }) => (
-						<View style={styles.movieCard}>
-							<TouchableOpacity
-								activeOpacity={constants.ACTIVE_OPACITY}
-								onPress={() => handleMovieSelect(item)}
-							>
-								<Image
-									source={{ uri: IMAGE_BASE_URL + item?.poster_path }}
-									style={styles.poster}
-								/>
-								<Text style={styles.title}>{item?.title}</Text>
-								<View style={styles.ratingsContainer}>
-									{renderParentalRating(item?.parental_rating)}
-									{renderUserRating(item?.vote_average)}
-								</View>
-								<Text style={styles.genres}>{getGenreNames(item?.genre_ids)}</Text>
-							</TouchableOpacity>
-						</View>
-					)}
+					renderItem={renderItem}
 					mode="parallax" // Enables parallax effect for smoother transitions
 					modeConfig={{
 						parallaxScrollingScale: 0.9, // Scale for adjacent items
@@ -150,12 +144,13 @@ export default function MovieListScreen() {
 					scrollAnimationDuration={400}
 				/>
 			</View>
-      {selectedMovie?.video_url && (
+      {selectedMovie && selectedMovie?.video_url && (
         <VideoPlayerOverlay
           videoUrl={selectedMovie?.video_url}
           showTrailer={showTrailer}
           closeTrailer={closeTrailer}
           trailerOpacity={trailerOpacity}
+					selectedMovie={selectedMovie}
         />
       )}
     </View>
@@ -191,50 +186,8 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   poster: {
-    width: POSTER_WIDTH,
-    height: POSTER_HEIGHT,
+    width: constants.POSTER_WIDTH,
+    height: constants.POSTER_HEIGHT,
     borderRadius: 10, 
-  },
-  title: {
-    width: POSTER_WIDTH, // ensure that title never extends beyond the box-art's width
-    fontSize: 20,
-    fontFamily: "AmazonEmberDisplayMedium",
-    color: "#fff", 
-    textAlign: "center",
-    marginTop: 16, 
-  },
-  genres: {
-    fontSize: 14,
-    fontFamily: "AmazonEmberRegular",
-    color: "#ccc", 
-    textAlign: "center",
-    marginTop: 8, 
-  },
-  ratingsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 16,
-  },
-  ratingBadge: {
-    backgroundColor: "#333", 
-    minWidth: 28,
-    paddingVertical: 5,
-    paddingHorizontal: 5,
-    borderRadius: 6, 
-    marginHorizontal: 5,
-  },
-  userRatingBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  starIcon: {
-    marginRight: 5,
-  },
-  ratingText: {
-    fontSize: 14, 
-    fontFamily: "AmazonEmberRegular",
-    color: "#fff", 
-    textAlign: "center",
   },
 });

@@ -20,12 +20,18 @@
 export type Movie = {
   id: number;
   title: string;
+	release_year: string | undefined;
   vote_average: number;
   genre_ids: number[];
   adult: boolean;
   poster_path: string;
   video_url: string | null;
+	overview: string | null;
+	genres: string | null; 
   parental_rating: string | null;
+	description: string | undefined; 
+	director: string | undefined;
+	cast: string[] | undefined; 
 };
 
 export type Genre = {
