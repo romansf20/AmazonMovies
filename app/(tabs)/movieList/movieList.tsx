@@ -79,12 +79,13 @@ export default function MovieListScreen() {
 		setShowTrailer(true);
 		Animated.timing(trailerOpacity, {
 			toValue: 1,
-			duration: 400,
+			duration: 300,
 			useNativeDriver: true,
 		}).start();
 	};
 
   const closeTrailer = () => {
+		trailerOpacity.setValue(0); 
     setShowTrailer(false);
   };
 
