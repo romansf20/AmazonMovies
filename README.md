@@ -73,6 +73,7 @@ In the output, you'll find options to open the app in a
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
 ## Folder Structure
+```text
 .
 ├── app/
 │   ├── (tabs)/
@@ -88,7 +89,9 @@ You can start developing by editing the files inside the **app** directory. This
 │   ├── constants.ts
 │   ├── types.ts
 └── assets/
-
+│	  ├── fonts/
+│		├── images/
+└──--
 ## Key Files
 
 - **movieList.tsx** [Home Screen Component]:
