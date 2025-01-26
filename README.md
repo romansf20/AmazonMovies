@@ -16,6 +16,7 @@ The app features a **Home screen** with a horizontally scrollable movie carousel
   - Integrates a full-screen trailer player using a modal overlay.
 	- Displays more movie details in the video player modal overlay.
   - Smooth animations for transitions using `react-native-reanimated-carousel`.
+	- Playback of video trailers using `react-native-youtube-iframe`. 
 - **Search and Profile Screens**:
   - Placeholder screens with static text for future enhancements.
 
