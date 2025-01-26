@@ -88,10 +88,10 @@ You can start developing by editing the files inside the **app** directory. This
 │   │   └── apiService.ts
 │   ├── constants.ts
 │   ├── types.ts
-└── assets/
-│	  ├── fonts/
-│		├── images/
-└──--
+├── assets/
+│   ├── fonts/
+│   └── images/
+
 ## Key Files
 
 - **movieList.tsx** [Home Screen Component]:
