@@ -12,7 +12,7 @@ The app features a **Home screen** with a horizontally scrollable movie carousel
   - Displays a list of top movies in a horizontally scrollable carousel.
 	- Displays basic movie details in the carousel item.
   - Fetches and displays movies, genres, user ratings, and parental ratings via an API from: 
-		- https://developer.themoviedb.org/docs/getting-started
+		https://developer.themoviedb.org/docs/getting-started
   - Integrates a full-screen trailer player using a modal overlay.
 	- Displays more movie details in the video player modal overlay.
   - Smooth animations for transitions using `react-native-reanimated-carousel`.
@@ -30,7 +30,8 @@ The app features a **Home screen** with a horizontally scrollable movie carousel
 - **Animations**:
   - Smooth fade-in and fade-out animations for the trailer modal using the `Animated` API.
 - **Typography**:
-  - Uses the **Amazon Ember** font family for titles and text.
+  - Uses the **Amazon Ember Display** font family for titles and larger text.
+	- Uses the **Amazon Ember** font family for smaller labels, body, and everything else.
 - **Dark Theme**:
   - Styled with dark mode UI elements, ensuring high contrast and readability.
 - **Scalability**:
